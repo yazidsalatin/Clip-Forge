@@ -45,9 +45,15 @@ Model Whisper diunduh otomatis saat transkripsi pertama (`small` ≈ 500 MB).
 3. **Edit** di halaman: rentang waktu, rasio, gerakan, gaya teks, bingkai, dan (untuk podcast) pembicara aktif.
 4. **Render** (`POST /api/render`). Hasilnya MP4 H.264 + AAC di `/api/renders/...`.
 
-### Penilaian momen
+### Penilaian momen (Mode Mandiri Tanpa API & Mode AI Opsional)
 
-Tanpa kunci API, server memberi skor heuristik: kerapatan ucapan, pertanyaan, angka, kata pemicu, dan penekanan. Dengan `ANTHROPIC_API_KEY`, 3× jumlah klip kandidat teratas dikirim ke model untuk dipilih dan diberi judul. Kalau panggilan gagal, server otomatis kembali ke heuristik. Transkrip diperlakukan sebagai data, bukan instruksi.
+Secara bawaan, ClipForge bekerja **100% mandiri secara lokal tanpa membutuhkan kunci API**. Sistem menggunakan mesin heuristik dan NLP lokal yang telah dioptimalkan:
+- **Skor Virality**: Menilai ritme percakapan optimal (kata/detik), tanda tanya/seru, angka statistik, kepadatan kata pemicu (*hook words*), frasa pancingan, serta bobot hook di detik-detik awal.
+- **Judul Otomatis Cerdas (`smart_local_title`)**: Menyaring kata pengisi (*filler words* seperti "nah jadi", "sebenarnya", dsb.), mendeteksi kalimat tanya/punchline terbaik, dan memotong teks rapi pada batas kata.
+- **Tag Dinamis (`smart_local_tags`)**: Mengekstrak tag tematik (bisnis, keuangan, produktivitas, teknologi, dsb.) dan kategori format (tips, data, tanya-jawab, cerita) langsung dari transkrip.
+- **Pemerataan Momen**: Mencegah klip menumpuk di menit yang sama dengan mendistribusikan kandidat klip ke sepanjang durasi video.
+
+*(Opsional)* Bila `GEMINI_API_KEY` atau `ANTHROPIC_API_KEY` diisi di `.env`, server dapat memanfaatkan LLM untuk kurasi tambahan. Jika tidak diisi, ClipForge langsung berjalan dalam mode mandiri penuh tanpa peringatan atau ketergantungan internet.
 
 ### AI Motion
 
@@ -91,7 +97,7 @@ Lihat `.env.example`. Yang paling berpengaruh:
 |---|---|
 | `WHISPER_MODEL` | `tiny`…`large-v3`. Lebih besar = lebih akurat dan lebih lambat |
 | `WHISPER_DEVICE` / `WHISPER_COMPUTE` | Pakai `cuda` + `float16` bila ada GPU NVIDIA |
-| `ANTHROPIC_API_KEY` | Mengaktifkan penilaian oleh AI |
+| `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` | *(Opsional)* Mengaktifkan kurasi AI tambahan (bawaan: kosong / mode mandiri lokal) |
 | `MAX_UPLOAD_MB`, `MAX_SOURCE_MIN` | Batas ukuran unggahan dan durasi sumber |
 | `CLIPFORGE_WORKERS` | Jumlah job paralel (render memakan CPU) |
 

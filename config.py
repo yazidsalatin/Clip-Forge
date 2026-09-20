@@ -15,8 +15,9 @@ WHISPER_MODEL = os.getenv("WHISPER_MODEL", "small")
 WHISPER_DEVICE = os.getenv("WHISPER_DEVICE", "auto")
 WHISPER_COMPUTE = os.getenv("WHISPER_COMPUTE", "int8")
 
-# Penilaian momen dengan LLM (opsional). Tanpa ANTHROPIC_API_KEY, server memakai penilaian heuristik.
-LLM_MODEL = os.getenv("CLIPFORGE_MODEL", "claude-sonnet-5")
+# Penilaian momen dengan LLM (opsional). Tanpa API key, server berjalan 100% mandiri menggunakan analisis heuristik & NLP lokal.
+LLM_MODEL = os.getenv("CLIPFORGE_MODEL", "gemini-1.5-flash")
+LLM_API_KEY = os.getenv("GEMINI_API_KEY", os.getenv("ANTHROPIC_API_KEY", "")).strip()
 
 # Batas pemakaian
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "2048"))

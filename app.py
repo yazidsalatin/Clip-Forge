@@ -76,12 +76,17 @@ def health():
     def has(mod: str) -> bool:
         return importlib.util.find_spec(mod) is not None
 
+    has_llm = bool(config.LLM_API_KEY) and (
+        (bool(os.getenv("GEMINI_API_KEY")) and has("google.generativeai")) or
+        (bool(os.getenv("ANTHROPIC_API_KEY")) and has("anthropic"))
+    )
     features = {
         "ffmpeg": bool(shutil.which("ffmpeg") and shutil.which("ffprobe")),
         "whisper": has("faster_whisper"),
         "ytdlp": has("yt_dlp"),
         "opencv": has("cv2"),
-        "llm": bool(os.getenv("ANTHROPIC_API_KEY")) and has("anthropic"),
+        "llm": has_llm,
+        "mode": "cloud_ai" if has_llm else "local_standalone",
     }
     names = {"ffmpeg": "ffmpeg", "whisper": "faster-whisper", "ytdlp": "yt-dlp", "opencv": "opencv"}
     return {"ok": True, "version": app.version, "features": features,
@@ -279,3 +284,13 @@ def get_media(sid: str):
 # Antarmuka web: file HTML disajikan dari folder static/ sehingga API dan halaman satu asal (tanpa CORS).
 if config.STATIC_DIR.exists():
     app.mount("/", StaticFiles(directory=str(config.STATIC_DIR), html=True), name="static")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    print("\n=======================================================")
+    print(" ClipForge Web siap digunakan di: http://localhost:8000")
+    print(" Mode: Mandiri Lokal (Tanpa API Key)")
+    print(" Tekan Ctrl + C untuk menghentikan server")
+    print("=======================================================\n")
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=False)
