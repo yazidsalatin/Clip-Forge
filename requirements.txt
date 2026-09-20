@@ -1,0 +1,8 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+yt-dlp                          # perbarui rutin: YouTube sering mengubah cara unduhnya
+faster-whisper>=1.0
+numpy>=1.26
+opencv-python-headless>=4.9,<5  # jangan 5.x: detektor wajah bawaan dihapus di OpenCV 5
+anthropic>=0.40                 # opsional: penilaian momen oleh AI (butuh ANTHROPIC_API_KEY)

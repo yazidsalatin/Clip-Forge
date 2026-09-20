@@ -1,0 +1,3 @@
+-r requirements.txt
+httpx>=0.27
+scikit-image>=0.22   # hanya untuk tests/speaker_test.py (foto uji)
